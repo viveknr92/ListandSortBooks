@@ -14,8 +14,7 @@ db.connect(function(err) {
   else console.log("Connected to DB!");
 });
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
+router.get('/', function(req, res) {
   db.query("SELECT * from books", function (err, result){
     if (err) return res.status(500).send({err});
 
@@ -23,7 +22,7 @@ router.get('/', function(req, res, next) {
     console.log(req.query.col);
 
     if (req.query.sort === undefined || req.query.col === undefined){
-      //default
+      //default case
       return res.json(result.sort(compare_title));
     }
 
@@ -52,41 +51,66 @@ router.get('/', function(req, res, next) {
     }
 
     else{
-      return res.json({err : "Invalid COL query"});
+      return res.json({err : "Invalid column name query"});
     }
   })
 });
 
 function compare_title(a, b) {
-  if (a.title < b.title)
-    return -1;
-  if (a.title > b.title)
-    return 1;
+  if (a.title < b.title) return -1;
+  if (a.title > b.title) return 1;
   return 0;
 }
 
 function compare_author(a, b) {
-  if (a.author < b.author)
-    return -1;
-  if (a.author > b.author)
-    return 1;
+  if (a.author < b.author) return -1;
+  if (a.author > b.author) return 1;
   return 0;
 }
 
 function compare_price(a, b) {
-  if (parseFloat(a.price) < parseFloat(b.price))
-    return -1;
-  if (parseFloat(a.price) > parseFloat(b.price))
-    return 1;
+  if (parseFloat(a.price) < parseFloat(b.price)) return -1;
+  if (parseFloat(a.price) > parseFloat(b.price)) return 1;
   return 0;
 }
 
 function compare_availability(a, b) {
-  if (a.availability < b.availability)
-    return -1;
-  if (a.availability > b.availability)
-    return 1;
+  if (a.availability < b.availability) return -1;
+  if (a.availability > b.availability) return 1;
   return 0;
 }
+
+router.post('/', function(req, res) {
+  var sql = "INSERT INTO books (title, author, price, availability, url) VALUES ?";
+  var values = [[req.body.title, req.body.author, req.body.price, req.body.availability, req.body.url]];
+
+  db.query(sql, [values], function (err, result) {
+    if (err) return res.status(500).json({err : err});
+    res.json({message : "New book inserted with id " + result.insertId});
+  });
+
+})
+
+router.put('/:id', function(req, res) {
+  var sql = `UPDATE books SET title = '${req.body.title}', author = '${req.body.author}' 
+  , price = '${req.body.price}', availability = '${req.body.availability}', url = '${req.body.url}'
+  WHERE id = ${req.params.id}`;
+  
+  db.query(sql, function (err, result) {
+    if (err) return res.status(500).json({err : err});
+    if (result.affectedRows === 0) return res.status(400).json({message : "Invalid Book ID"});
+    res.json({message : "Book with id " + req.params.id + " updated"});
+  });
+
+})
+
+router.delete('/:id', function(req, res) {
+  var sql = `DELETE from books where id = '${req.params.id}'`;
+  db.query(sql, function (err, result) {
+    if (err) return res.status(500).json({err : err});
+    if (result.affectedRows === 0) return res.status(400).json({message : "Invalid Book ID"});
+    res.json({message : "Book with id " + req.params.id + " deleted"});
+  });
+})
 
 module.exports = router;
