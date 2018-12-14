@@ -17,71 +17,42 @@ db.connect(function(err) {
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   db.query("SELECT * from books", function (err, result){
-    if (err) res.status(500).send({err});
-    res.json(result.sort(compare_title));
-  })
-});
+    if (err) return res.status(500).send({err});
 
-router.get('/title', function(req, res, next) {
-  var sort_order = req.query.sort;
-  db.query("SELECT * from books", function (err, result){
-    if (err) res.status(500).send({err});
-    if (sort_order === "aesc"){
-      res.json(result.sort(compare_title));
-    }
-    else if (sort_order === "desc"){
-      res.json(result.sort(compare_title).reverse());
-    }
-    else{
-      res.json({err : "Incorrect sort parameter"});
-    }
-  })
-});
+    console.log(req.query.sort);
+    console.log(req.query.col);
 
-router.get('/author', function(req, res, next) {
-  var sort_order = req.query.sort;
-  db.query("SELECT * from books", function (err, result){
-    if (err) res.status(500).send({err});
-    if (sort_order === "aesc"){
-      res.json(result.sort(compare_author));
+    if (req.query.sort === undefined || req.query.col === undefined){
+      //default
+      return res.json(result.sort(compare_title));
     }
-    else if (sort_order === "desc"){
-      res.json(result.sort(compare_author).reverse());
-    }
-    else{
-      res.json({err : "Incorrect sort parameter"});
-    }
-  })
-});
 
-router.get('/price', function(req, res, next) {
-  var sort_order = req.query.sort;
-  db.query("SELECT * from books", function (err, result){
-    if (err) res.status(500).send({err});
-    if (sort_order === "aesc"){
-      res.json(result.sort(compare_price));
+    else if (req.query.col === "title"){
+      if (req.query.sort === "aesc") return res.json(result.sort(compare_title));
+      else if (req.query.sort === "desc") return res.json(result.sort(compare_title).reverse());
+      else return res.json({err : "Invalid sort query"});
     }
-    else if (sort_order === "desc"){
-      res.json(result.sort(compare_price).reverse());
-    }
-    else{
-      res.json({err : "Incorrect sort parameter"});
-    }
-  })
-});
 
-router.get('/availability', function(req, res, next) {
-  var sort_order = req.query.sort;
-  db.query("SELECT * from books", function (err, result){
-    if (err) res.status(500).send({err});
-    if (sort_order === "aesc"){
-      res.json(result.sort(compare_availability));
+    else if (req.query.col === "author"){
+      if (req.query.sort === "aesc") return res.json(result.sort(compare_author));
+      else if (req.query.sort === "desc") return res.json(result.sort(compare_author).reverse());
+      else return res.json({err : "Invalid sort query"});
     }
-    else if (sort_order === "desc"){
-      res.json(result.sort(compare_availability).reverse());
+
+    else if (req.query.col === "price"){
+      if (req.query.sort === "aesc") return res.json(result.sort(compare_price));
+      else if (req.query.sort === "desc") return res.json(result.sort(compare_price).reverse());
+      else return res.json({err : "Invalid sort query"});
     }
+
+    else if (req.query.col === "availability"){
+      if (req.query.sort === "aesc") return res.json(result.sort(compare_availability));
+      else if (req.query.sort === "desc") return res.json(result.sort(compare_availability).reverse());
+      else return res.json({err : "Invalid sort query"});
+    }
+
     else{
-      res.json({err : "Incorrect sort parameter"});
+      return res.json({err : "Invalid COL query"});
     }
   })
 });

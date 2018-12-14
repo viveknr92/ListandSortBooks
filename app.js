@@ -11,7 +11,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.get('/', function(err, res){
-  if (err) res.status.send({err});
   res.redirect('/books');
 })
 app.use('/books', booksRouter);
