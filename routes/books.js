@@ -86,7 +86,7 @@ router.post('/', function(req, res) {
 
   db.query(sql, [values], function (err, result) {
     if (err) return res.status(500).json({err : err});
-    res.json({message : "New book inserted with id " + result.insertId});
+    res.status(201).json({message : "New book inserted with id " + result.insertId});
   });
 
 })
