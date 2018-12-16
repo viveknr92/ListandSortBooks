@@ -22,7 +22,7 @@ router.get('/', function(req, res) {
     console.log(req.query.col);
 
     if (req.query.sort === undefined || req.query.col === undefined){
-      //default case
+      //default case - sort by title in aesc order
       return res.json(result.sort(compare_title));
     }
 
@@ -57,14 +57,14 @@ router.get('/', function(req, res) {
 });
 
 function compare_title(a, b) {
-  if (a.title < b.title) return -1;
-  if (a.title > b.title) return 1;
+  if (a.title.toLowerCase() < b.title.toLowerCase()) return -1;
+  if (a.title.toLowerCase() > b.title.toLowerCase()) return 1;
   return 0;
 }
 
 function compare_author(a, b) {
-  if (a.author < b.author) return -1;
-  if (a.author > b.author) return 1;
+  if (a.author.toLowerCase() < b.author.toLowerCase()) return -1;
+  if (a.author.toLowerCase() > b.author.toLowerCase()) return 1;
   return 0;
 }
 
@@ -75,8 +75,8 @@ function compare_price(a, b) {
 }
 
 function compare_availability(a, b) {
-  if (a.availability < b.availability) return -1;
-  if (a.availability > b.availability) return 1;
+  if (a.availability.toLowerCase() < b.availability.toLowerCase()) return -1;
+  if (a.availability.toLowerCase() > b.availability.toLowerCase()) return 1;
   return 0;
 }
 
