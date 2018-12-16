@@ -29,29 +29,29 @@ router.get('/', function(req, res) {
     else if (req.query.col === "title"){
       if (req.query.sort === "aesc") return res.json(result.sort(compare_title));
       else if (req.query.sort === "desc") return res.json(result.sort(compare_title).reverse());
-      else return res.json({err : "Invalid sort query"});
+      else return res.status(400).json({err : "Invalid sort query"});
     }
 
     else if (req.query.col === "author"){
       if (req.query.sort === "aesc") return res.json(result.sort(compare_author));
       else if (req.query.sort === "desc") return res.json(result.sort(compare_author).reverse());
-      else return res.json({err : "Invalid sort query"});
+      else return res.status(400).json({err : "Invalid sort query"});
     }
 
     else if (req.query.col === "price"){
       if (req.query.sort === "aesc") return res.json(result.sort(compare_price));
       else if (req.query.sort === "desc") return res.json(result.sort(compare_price).reverse());
-      else return res.json({err : "Invalid sort query"});
+      else return res.status(400).json({err : "Invalid sort query"});
     }
 
     else if (req.query.col === "availability"){
       if (req.query.sort === "aesc") return res.json(result.sort(compare_availability));
       else if (req.query.sort === "desc") return res.json(result.sort(compare_availability).reverse());
-      else return res.json({err : "Invalid sort query"});
+      else return res.status(400).json({err : "Invalid sort query"});
     }
 
     else{
-      return res.json({err : "Invalid column name query"});
+      return res.status(400).json({err : "Invalid column name query"});
     }
   })
 });
