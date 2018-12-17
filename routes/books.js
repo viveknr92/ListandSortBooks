@@ -14,10 +14,25 @@ db.connect(function(err) {
   else console.log("Connected to DB!");
 });
 
+function getComparator(colName) {
+  return {
+    title: compare_title,
+    author: compare_author,
+    price:compare_price,
+    availability:compare_availability
+  }[colName]
+}
+
+function handleSort(req, res, colName, result) {
+  if (req.query.sort === "aesc") return res.json(result.sort(getComparator(colName)));
+  else if (req.query.sort === "desc") return res.json(result.sort(getComparator(colName)).reverse());
+  else return res.status(400).json({err : "Invalid sort query"});
+}
+
 router.get('/', function(req, res) {
   db.query("SELECT * from books", function (err, result){
     if (err) return res.status(500).send({err});
-
+    
     console.log(req.query.sort);
     console.log(req.query.col);
 
@@ -27,27 +42,19 @@ router.get('/', function(req, res) {
     }
 
     else if (req.query.col === "title"){
-      if (req.query.sort === "aesc") return res.json(result.sort(compare_title));
-      else if (req.query.sort === "desc") return res.json(result.sort(compare_title).reverse());
-      else return res.status(400).json({err : "Invalid sort query"});
+      handleSort(req,res, "title", result);
     }
 
     else if (req.query.col === "author"){
-      if (req.query.sort === "aesc") return res.json(result.sort(compare_author));
-      else if (req.query.sort === "desc") return res.json(result.sort(compare_author).reverse());
-      else return res.status(400).json({err : "Invalid sort query"});
+      handleSort(req,res, "author", result);
     }
 
     else if (req.query.col === "price"){
-      if (req.query.sort === "aesc") return res.json(result.sort(compare_price));
-      else if (req.query.sort === "desc") return res.json(result.sort(compare_price).reverse());
-      else return res.status(400).json({err : "Invalid sort query"});
+      handleSort(req,res, "price", result);
     }
 
     else if (req.query.col === "availability"){
-      if (req.query.sort === "aesc") return res.json(result.sort(compare_availability));
-      else if (req.query.sort === "desc") return res.json(result.sort(compare_availability).reverse());
-      else return res.status(400).json({err : "Invalid sort query"});
+      handleSort(req,res, "availability", result);
     }
 
     else{
@@ -56,16 +63,20 @@ router.get('/', function(req, res) {
   })
 });
 
+function handleStringSort(prop) {
+  return function(a, b) {
+    if(a[prop].toLowerCase() < b[prop].toLowerCase())return -1;
+    if (a[prop].toLowerCase() > b[prop].toLowerCase()) return 1;
+    return 0;
+  }
+}
+
 function compare_title(a, b) {
-  if (a.title.toLowerCase() < b.title.toLowerCase()) return -1;
-  if (a.title.toLowerCase() > b.title.toLowerCase()) return 1;
-  return 0;
+  return handleStringSort('title')(a, b)
 }
 
 function compare_author(a, b) {
-  if (a.author.toLowerCase() < b.author.toLowerCase()) return -1;
-  if (a.author.toLowerCase() > b.author.toLowerCase()) return 1;
-  return 0;
+  return handleStringSort('author')(a, b)
 }
 
 function compare_price(a, b) {
@@ -75,9 +86,7 @@ function compare_price(a, b) {
 }
 
 function compare_availability(a, b) {
-  if (a.availability.toLowerCase() < b.availability.toLowerCase()) return -1;
-  if (a.availability.toLowerCase() > b.availability.toLowerCase()) return 1;
-  return 0;
+  return handleStringSort('availability')(a, b)
 }
 
 router.post('/', function(req, res) {
