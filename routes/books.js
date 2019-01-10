@@ -20,7 +20,7 @@ function getComparator(colName) {
     author: compare_author,
     price:compare_price,
     availability:compare_availability
-  }[colName]
+  }[colName] // specifies the key of the object. ie. title or author or price or availability
 }
 
 function handleSort(req, res, colName, result) {
@@ -65,7 +65,7 @@ router.get('/', function(req, res) {
 
 function handleStringSort(prop) {
   return function(a, b) {
-    if(a[prop].toLowerCase() < b[prop].toLowerCase())return -1;
+    if(a[prop].toLowerCase() < b[prop].toLowerCase()) return -1;
     if (a[prop].toLowerCase() > b[prop].toLowerCase()) return 1;
     return 0;
   }
