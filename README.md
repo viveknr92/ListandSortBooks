@@ -1,4 +1,5 @@
 # ListandSortBooks
+This assignment demostrates the use of data driven programming with JavaScript.
 
 Build a service that when called will return list of books that the UI can display. Each book in the list should contain:
  
